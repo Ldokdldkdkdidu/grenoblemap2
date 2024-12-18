@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Monumentos en Grenoble</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <style>
+        /* Estilo para que el mapa ocupe toda la pantalla */
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Estilo para el fondo azul claro de los popups */
+        .leaflet-popup-content {
+            background-color: #e0f7fa;  /* Azul claro */
+            color: #000000;  /* Texto en negro */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Estilo para el borde de los cuadros del popup */
+        .leaflet-popup-tip {
+            border-top-color: #e0f7fa;  /* Coincide con el color del fondo */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Div para contener el mapa -->
+    <div id="map"></div>
+
+    <!-- Cargar las bibliotecas necesarias -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script>
+        // Crear el mapa centrado en Grenoble
+        var map = L.map('map').setView([45.188529, 5.724524], 13);
+
+        // Agregar la capa de mapa de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Coordenadas de los monumentos
+        var monumentos = {
+            "La Bastille": [45.197222, 5.728056],
+            "Place Grenette": [45.191667, 5.730556],
+            "Pistes des Alpes (Chamrousse)": [45.110556, 5.877778],
+            "Porte de France": [45.191296, 5.726992],   // Corregí las coordenadas
+            "Jardin du Dauphin": [45.189821, 5.728269], // Corregí las coordenadas
+            "Catedral Notre-Dame de Grenoble": [45.191442, 5.726221] // Corregí las coordenadas
+        };
+
+        // Crear un icono de chincheta azul (sin el punto en el medio)
+        var azulChincheta = new L.Icon({
+            iconUrl: 'https://www.dropbox.com/scl/fi/k2yotxfngqg8g78pg6ffh/pngegg.png?rlkey=c9lye716ci3zozk6dpfskc3d5&st=4qqdp004&raw=1',  // URL de la imagen de chincheta azul
+            iconSize: [30, 50],  // Tamaño del icono
+            iconAnchor: [15, 50],  // Punto de anclaje en la parte inferior
+            popupAnchor: [0, -45]  // Ubicación del popup
+        });
+
+        // Añadir chinchetas azules con la forma de una chincheta tradicional
+        for (var nombre in monumentos) {
+            L.marker(monumentos[nombre], { icon: azulChincheta })
+                .addTo(map)
+                .bindPopup('<b>' + nombre + '</b><br>' + getInfo(nombre));
+        }
+
+        // Función para personalizar el texto de cada marcador en francés
+        function getInfo(nombre) {
+            var info = {
+                "La Bastille": "Depuis le centre-ville de Grenoble :<br><br>Option 1 : Prenez le téléphérique depuis la place de Verdun. C'est le moyen le plus rapide et amusant d'y aller. En 3 minutes, vous serez en haut, avec une vue magnifique sur la ville.<br>Option 2 : Si vous préférez marcher, vous pouvez prendre le sentier qui monte à La Bastille. Cela prend environ 30 à 40 minutes, mais vous aurez une vue panoramique tout au long du parcours.<br><br><b>Temps :</b> Téléphérique : 3 minutes. Marche : 30-40 minutes.",
+                "Place Grenette": "Depuis la gare de Grenoble :<br><br>Option 1 : C'est à seulement 10 minutes à pied de la gare. Sortez de la gare, traversez le fleuve et marchez tout droit jusqu'à la Place Grenette, au cœur du centre-ville.<br>Option 2 : Si vous préférez prendre le bus, vous pouvez prendre les lignes C1 ou C3, qui s'arrêtent près de la place, mais il est plus rapide de marcher.<br><br><b>Temps :</b> À pied : 10 minutes. Bus : 5-10 minutes.",
+                "Pistes des Alpes (Chamrousse)": "Depuis le centre-ville de Grenoble :<br><br>Option 1 : Prenez le bus (ligne 6020) depuis la gare routière de Grenoble. Le trajet prend environ 1h30, mais il est très pratique si vous ne voulez pas conduire.<br>Option 2 : Si vous avez une voiture, vous pouvez prendre la route D531 en direction de Chamrousse. Le trajet dure environ 45 minutes, et c'est la meilleure option si vous voulez plus de flexibilité pour explorer la station de ski.<br><br><b>Temps :</b> Bus : 1h30. Voiture : 45 minutes.",
+                "Porte de France": "Depuis le centre-ville de Grenoble :<br><br>Option 1 : Prenez la ligne de bus C2 et descendez à l'arrêt 'Porte de France'. Vous êtes directement à l'entrée de la Porte de France.<br>Option 2 : Vous pouvez marcher depuis la place Victor Hugo, ce qui vous prendra environ 15 minutes en traversant la ville.<br><br><b>Temps :</b> Bus : 10 minutes. À pied : 15 minutes.",
+                "Jardin du Dauphin": "Depuis la Place Grenette :<br><br>Option 1 : Marchez environ 10 minutes jusqu'au Jardin du Dauphin. Il est situé près du Musée de Grenoble, et vous pourrez profiter d'un joli parc pendant votre trajet.<br>Option 2 : Prenez un taxi ou un vélo, cela vous permettra d'y arriver plus rapidement si vous préférez ne pas marcher.<br><br><b>Temps :</b> À pied : 10 minutes. Vélo : 5 minutes.",
+                "Catedral Notre-Dame de Grenoble": "Depuis la gare de Grenoble :<br><br>Option 1 : Marchez environ 5 à 10 minutes pour rejoindre la Cathédrale Notre-Dame. C'est une belle promenade dans le centre-ville de Grenoble.<br>Option 2 : Prenez le bus C1 ou C3, qui vous amènera près de la cathédrale en quelques minutes.<br><br><b>Temps :</b> À pied : 5-10 minutes. Bus : 5 minutes."
+            };
+            return info[nombre];
+        }
+    </script>
+</body>
+</html>
